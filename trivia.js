@@ -20,7 +20,5 @@ class Trivia{
       const shuffleArray = Utility.shuffleArray(allAnswers);  //utilizzo lo shuffleArray che è nella classe Utility. --> per evitare che la risporta n^1 sia sempre la corretta.
       return shuffleArray;                                    //restituisce un array che contiene tutte le risposte, corrette e sbagliate
     }
-
-    
 }
 
