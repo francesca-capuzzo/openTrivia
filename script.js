@@ -1,3 +1,4 @@
+
 function loadTrivia() {
     fetch('https://opentdb.com/api.php?amount=10')
     .then(response => response.json())
@@ -6,6 +7,7 @@ function loadTrivia() {
 }
 
 //APRI LINK API PER VEDERE CONTENUTO E CAPIRE LE VARIABILI UTILIZZATE!!
+
 
 
 function createTrivias(data) {                     //data per adesso è l'API in json all'url https://opentdb.com/api.php?amount=10
@@ -21,27 +23,79 @@ function createTrivias(data) {                     //data per adesso è l'API in
     // console.log(firstTrivia.getAllAnswers());      //loggo tutte le risposte
     // console.log("All trivia objects",triviaArray); //loggo l'intero array con i 10 oggetti
 
-    displayTrivia(triviaArray);
+    displayTrivia(triviaArray);                       //passo il parametro altrimenti non vede triviaArray (oppure metto triviaArray come variabile globale ma questo non è il metodo migliore)
 }
+
+
 
 function displayTrivia(triviaArray) {
-    console.log(triviaArray);
+
+    console.log("All trivia object",triviaArray);
     
     const list = document.getElementById("trivia-list");
-    const title = document.getElementsByClassName("main-title")[0]; //senza [0] restituisce una collection con tutti i tag appartenenti a quella classe
-    const title2 = document.getElementsByClassName("main-title")[1];
-    const body = document.getElementsByTagName("body")[0];
-    const list2 = document.querySelector("#trivia-list");           //utilizza il selezionatore del CSS (# per id)(. per classe) e poi il nome dato al tag!
-    const title3 = document.querySelector(".main-title");           //NON PRENDE UNA COLLECTION MA PRENDE SOLO IL PRIMO TAG CHE TROVA CON QUELLA CLASSE (quindi restituisce solo il primo)
-    const body2 = document.querySelector("body");
 
-    console.log(list);
-    console.log(title);
-    console.log(title2);
-    console.log(body);
-    console.log(list2);
-    console.log(title3);
-    console.log(body2);
+    // const title = document.getElementsByClassName("main-title")[0]; //senza [0] restituisce una collection con tutti i tag appartenenti a quella classe
+    // const title2 = document.getElementsByClassName("main-title")[1];
+    // const body = document.getElementsByTagName("body")[0];
+    // const list2 = document.querySelector("#trivia-list");           //utilizza il selezionatore del CSS (# per id)(. per classe) e poi il nome dato al tag!
+    // const title3 = document.querySelector(".main-title");           //NON PRENDE UNA COLLECTION MA PRENDE SOLO IL PRIMO TAG CHE TROVA CON QUELLA CLASSE (quindi restituisce solo il primo)
+    // const body2 = document.querySelector("body");
+
+    // console.log("by ID",list);
+    // console.log("by class Name",title);
+    // console.log("by class Name",title2);
+    // console.log("by tag",body);
+    // console.log("query con ID",list2);
+    // console.log("query con class",title3);
+    // console.log("query con tag",body2);
+
+    for (const trivia of triviaArray) {
+        const liElement = createTriviaListElement(trivia)
+        list.appendChild(liElement)                                 //metto l'elemento creato dentro alla lista "trivia list" che è un UL
+    }
 }
 
 
+
+function createTriviaListElement(trivia) {
+    let liElement = document.createElement("li")                   //create element ci da un HTML element e gli passo il nome del tag come paramento --> qui creo un li element
+    let span = document.createElement("span");
+
+    span.className += "question-text ";                            //do un nome alla classe span
+    span.style.fontWeight = "bold";                                //do una proprietà con .style (come se fosse css);
+
+    let textNode = document.createTextNode(trivia.question);       //ci sono 4 modi per creare un text node (vedi online) --> qui aggiungo al li la domanda
+
+    span.appendChild(textNode);                                    //metto il text node dentro ad und uno SPAN che contiene il testo
+    liElement.appendChild(span);                                   //metto il li element dentro lo span
+
+    let answersList = createAnswersList(trivia.getAllAnswers())
+
+    liElement.appendChild(answersList);
+
+    return liElement;
+}
+
+
+
+function createAnswersList(answers) {
+    let answerList = document.createElement("ul");           //creo un UL
+
+    for (const answer of answers) {
+        const liElement = createAnswerListElement(answer)    //creo un li per ogni answer
+        answerList.appendChild(liElement)                               
+    }
+    return answerList;
+}
+
+
+
+function createAnswerListElement(answer) {
+    let liElement = document.createElement("li")                   //create element ci da un HTML element e gli passo il nome del tag come paramento --> qui creo un li element
+    let span = document.createElement("span");
+    let textNode = document.createTextNode(answer)                 //ci sono 4 modi per creare un text node (vedi online) --> qui aggiungo al li la domanda
+    span.appendChild(textNode);                                    //metto il text node dentro ad und uno SPAN che contiene il testo
+    liElement.appendChild(span);                                   //metto il li element dentro lo span
+
+    return liElement;
+}
