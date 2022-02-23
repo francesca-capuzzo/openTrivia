@@ -31,7 +31,7 @@ function createDivQuestion(trivia) {
     question.appendChild(span);
 
     for (const answer of trivia.getAllAnswers()) {
-        let buttonAnswer = createButtonAnswer(answer);
+        let buttonAnswer = createButtonAnswer(answer, trivia);
         question.appendChild(buttonAnswer);
     }
     return question;
@@ -49,12 +49,50 @@ function displayTrivia(triviaArray) {
 }
 
 
-function createButtonAnswer(answer) {
+
+let flag = false;
+
+function createButtonAnswer(answer, trivia) {
     let answerButton = document.createElement('button');
+    
     let textNode = document.createTextNode(answer);
     answerButton.appendChild(textNode);
+    
+    if (flag === false) {
+        answerButton.addEventListener('click',(event) => buttonClick(event, trivia));
+    }else {
+        answerButton.removeEventListener('click',(event) => buttonClick(event, trivia));
+    }
+    
 
     return answerButton;
+}
+
+
+let points = 0;
+
+function buttonClick(event, trivia) {
+    let text = event.originalTarget.firstChild.textContent;
+    console.log(text);
+    console.log(event);
+    let correct = trivia.checkAnswer(text);
+    console.log(correct);
+    if (correct === 1) {
+        points++;
+        // event.originalTarget.style.backgroundImage = 'linear-gradient(to left, violet, indigo, blue, green, orange, red)';
+        event.originalTarget.style.backgroundColor = 'green';
+        event.originalTarget.style.color = 'white';
+        flag = true;
+        //event.originalTarget.removeEventListener('click', (event) => buttonClick(event, trivia));
+      
+    }
+    else{
+        points = points;
+        event.originalTarget.style.backgroundColor = 'red';
+        event.originalTarget.style.color = 'black';
+        flag = true;
+        //event.originalTarget.removeEventListener('click', (event) => buttonClick(event, trivia)); 
+    }
 }
 
 
