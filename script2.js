@@ -5,6 +5,7 @@ function loadTrivia() {
     .catch(error => console.log(error));
 }
 
+let points = 0;
 
 function createTrivias(data) {                     
     const results = data.results;                  
@@ -18,6 +19,7 @@ function createTrivias(data) {
 
 
 function createDivQuestion(trivia) {
+   
     let question = document.createElement('div');
     question.className = 'question-div'
 
@@ -25,13 +27,13 @@ function createDivQuestion(trivia) {
     span.className = 'question-span';
     span.style.display = 'block';
 
-    let textNode = document.createTextNode(trivia.question.replace(/&quot/g, '"').replace(/&#039/g, '"').replace(/;/g, ""));
+    let textNode = document.createTextNode(trivia.question.replace(/&quot/g, '"').replace(/&#039/g, '"').replace(/;/g, "").replace(/&rsquo/g, "'").replace(/&amp/g, ' & ').replace(/&egrave/g, 'è').replace(/&eacute/g, 'é').replace(/&rdquo/g, '"').replace(/&aacute/g, 'à').replace(/&uacute/g, 'ù').replace(/&ouml/g,'ö' ));
     
     span.appendChild(textNode);
     question.appendChild(span);
 
     for (const answer of trivia.getAllAnswers()) {
-        let buttonAnswer = createButtonAnswer(answer, trivia);
+        let buttonAnswer = createButtonAnswer(answer, trivia, question);
         question.appendChild(buttonAnswer);
     }
     return question;
@@ -40,49 +42,58 @@ function createDivQuestion(trivia) {
 
 function displayTrivia(triviaArray) {
     let mainDiv = document.getElementById('main-container');
+    const userPoints = document.createElement('div');
+    userPoints.className = 'points'
+    let textNode = document.createTextNode('User Points:'+ " " + points + " / 10");
+    
+    
 
     for (const question of triviaArray) {
         let divQuestion = createDivQuestion(question);
         mainDiv.appendChild(divQuestion);
     }
+    userPoints.appendChild(textNode);
+    mainDiv.appendChild(userPoints);
     return mainDiv;
 }
 
 
 
-let flag = false;
+// let flag = false;
 
-function createButtonAnswer(answer, trivia) {
+function createButtonAnswer(answer, trivia, question) {
     let answerButton = document.createElement('button');
-    
-    let textNode = document.createTextNode(answer);
+    answerButton.className = 'button'
+    let textNode = document.createTextNode(answer.replace(/&quot/g, "'").replace(/&#039/g, "'").replace(/;/g, "").replace(/&rsquo/g, "'").replace(/&amp/g, ' & ').replace(/&egrave/g, 'è').replace(/&eacute/g, 'é').replace(/&rdquo/g, '"').replace(/&aacute/g, 'à').replace(/&uacute/g, 'ù').replace(/&ouml/g,'ö' ));
     answerButton.appendChild(textNode);
     
-    if (flag === false) {
-        answerButton.addEventListener('click',(event) => buttonClick(event, trivia));
-    }else {
-        answerButton.removeEventListener('click',(event) => buttonClick(event, trivia));
-    }
+    // if (flag === false) {
+    //     answerButton.addEventListener('click',(event) => buttonClick(event, trivia, question));
+    // }else {
+    //     answerButton.removeEventListener('click',(event) => buttonClick(event, trivia));
+    // }
     
+    answerButton.addEventListener('click',(event) => buttonClick(event, trivia, question));
 
     return answerButton;
 }
 
 
-let points = 0;
 
-function buttonClick(event, trivia) {
+
+function buttonClick(event, trivia, question) {
     let text = event.originalTarget.firstChild.textContent;
     console.log(text);
     console.log(event);
     let correct = trivia.checkAnswer(text);
-    console.log(correct);
+    console.log("correct",correct);
+    console.log("question",question);
     if (correct === 1) {
         points++;
-        // event.originalTarget.style.backgroundImage = 'linear-gradient(to left, violet, indigo, blue, green, orange, red)';
-        event.originalTarget.style.backgroundColor = 'green';
+        event.originalTarget.style.backgroundImage = 'linear-gradient(to left, rgb(238, 130, 238), rgb(75, 0, 130), rgb(0, 0, 255), rgb(0, 128, 0), rgb(255, 165, 0), rgb(255, 0, 0))';
+        // event.originalTarget.style.backgroundColor = 'green';
         event.originalTarget.style.color = 'white';
-        flag = true;
+        // flag = true;
         //event.originalTarget.removeEventListener('click', (event) => buttonClick(event, trivia));
       
     }
@@ -90,8 +101,16 @@ function buttonClick(event, trivia) {
         points = points;
         event.originalTarget.style.backgroundColor = 'red';
         event.originalTarget.style.color = 'black';
-        flag = true;
+        // flag = true;
         //event.originalTarget.removeEventListener('click', (event) => buttonClick(event, trivia)); 
+    }
+    
+    const buttons = question.getElementsByTagName('button');
+
+    console.log(buttons);
+    for (let i = 0; i < buttons.length; i++) {
+        console.log("buttons i",buttons[i]);
+        buttons[i].outerHTML = buttons[i].outerHTML; //removEventListener non funziona quindi prendo outerHTML che è l'elemento senza funzioni (solo html e css) e lo metto uguale a se stesso
     }
 }
 
